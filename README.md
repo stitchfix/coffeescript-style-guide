@@ -42,6 +42,7 @@ The details in this guide have been very heavily inspired by several existing st
     * [Exceptions](#exceptions)
     * [Annotations](#annotations)
     * [Miscellaneous](#miscellaneous)
+    * [Stitch Fix Specific](#stitch_fix)
 
 <a name="code_layout"/>
 ## Code layout
@@ -493,6 +494,48 @@ console.log args... # Yes
 
 (a, b, c, rest...) -> # Yes
 ```
+
+<a name="stitch_fix"/>
+## Stitch Fix Specific
+
+### Controller-specific
+
+Prefer the controller-specific coding convention, as provided by the app template:
+
+```coffeescript
+window.StitchFix =
+  # Namespace for controller-specific JS
+  controllers: {}
+  # Each controller's JS can insert itself into
+  # window.StitchFix.  If it's there, we call a method
+  # named for the action or, if that's not there, we do nothing
+  #
+  # controller_name - name of the controller that's rendering the current view
+  # action_name - action that triggered the rendering
+  jquery_ready: (controller_name,action_name) ->
+    controller_code = window.StitchFix.controllers[controller_name]
+    if (controller_code?)
+      if controller_code[action_name]?
+        controller_code[action_name]()
+
+if (jQuery?)
+  jQuery -> window.StitchFix.jquery_ready(window.controller,window.action)
+
+# some_resource.js.coffee
+
+window.StitchFix.controllers.some_resource =
+  new: -> # code on the new action
+  show: -> # code on the show action
+  _some_private_method: -> some_private_method # exposed for testing
+```
+
+### File location in Rails
+
+Non-controller/action specific code goes in `app/assets/javascripts/lib`
+
+### Testing
+
+Use Jasmine where possible.
 
 [coffeescript]: http://jashkenas.github.com/coffee-script/
 [coffeescript-issue-425]: https://github.com/jashkenas/coffee-script/issues/425
