@@ -42,6 +42,7 @@ The details in this guide have been very heavily inspired by several existing st
     * [Exceptions](#exceptions)
     * [Annotations](#annotations)
     * [Miscellaneous](#miscellaneous)
+    * [Stitch Fix Specific](#stitch_fix)
 
 <a name="code_layout"/>
 ## Code layout
@@ -236,7 +237,18 @@ For constants, use all uppercase with underscores:
 CONSTANT_LIKE_THIS
 ```
 
-Methods and variables that are intended to be "private" should begin with a leading underscore:
+For variables reference JQuery elements, precede the name with `$`
+
+```coffeescript
+# Yes
+$form = $("form[data-submit-form]")
+  
+# No
+form = $("form[data-submit-form]")
+
+```
+
+Methods and variables exposed in an object that are intended to be "private" should begin with a leading underscore:
 
 ```coffeescript
 _privateMethod: ->
@@ -287,30 +299,22 @@ print inspect value
 new Tag(new Value(a, b), new Arg(c))
 ```
 
-You will sometimes see parentheses used to group functions (instead of being used to group function parameters). Examples of using this style (hereafter referred to as the "function grouping style"):
+Do not use function grouping style:
 
 ```coffeescript
+# No
 ($ '#selektor').addClass 'klass'
 
+# No
 (foo 4).bar 8
-```
 
-This is in contrast to:
-
+# Yes
 ```coffeescript
 $('#selektor').addClass 'klass'
 
+# Yes
 foo(4).bar 8
 ```
-
-In cases where method calls are being chained, some adopters of this style prefer to use function grouping for the initial call only:
-
-```coffeescript
-($ '#selektor').addClass('klass').hide() # Initial call only
-(($ '#selektor').addClass 'klass').hide() # All calls
-```
-
-The function grouping style is not recommended. However, **if the function grouping style is adopted for a particular project, be consistent with its usage.**
 
 <a name="strings"/>
 ## Strings
@@ -329,6 +333,16 @@ Prefer single quoted strings (`''`) instead of double quoted (`""`) strings, unl
 
 Favor `unless` over `if` for negative conditions.
 
+```coffeescript
+# Yes
+unless foo
+  doSomething()
+
+# No
+if not foo
+  doSomething()
+```
+
 Instead of using `unless...else`, use `if...else`:
 
 ```coffeescript
@@ -345,7 +359,7 @@ Instead of using `unless...else`, use `if...else`:
     ...
 ```
 
-Multi-line if/else clauses should use indentation:
+Do not use `then`:
 
 ```coffeescript
   # Yes
@@ -480,6 +494,48 @@ console.log args... # Yes
 
 (a, b, c, rest...) -> # Yes
 ```
+
+<a name="stitch_fix"/>
+## Stitch Fix Specific
+
+### Controller-specific
+
+Prefer the controller-specific coding convention, as provided by the app template:
+
+```coffeescript
+window.StitchFix =
+  # Namespace for controller-specific JS
+  controllers: {}
+  # Each controller's JS can insert itself into
+  # window.StitchFix.  If it's there, we call a method
+  # named for the action or, if that's not there, we do nothing
+  #
+  # controller_name - name of the controller that's rendering the current view
+  # action_name - action that triggered the rendering
+  jquery_ready: (controller_name,action_name) ->
+    controller_code = window.StitchFix.controllers[controller_name]
+    if (controller_code?)
+      if controller_code[action_name]?
+        controller_code[action_name]()
+
+if (jQuery?)
+  jQuery -> window.StitchFix.jquery_ready(window.controller,window.action)
+
+# some_resource.js.coffee
+
+window.StitchFix.controllers.some_resource =
+  new: -> # code on the new action
+  show: -> # code on the show action
+  _some_private_method: -> some_private_method # exposed for testing
+```
+
+### File location in Rails
+
+Non-controller/action specific code goes in `app/assets/javascripts/lib`
+
+### Testing
+
+Use Jasmine where possible.
 
 [coffeescript]: http://jashkenas.github.com/coffee-script/
 [coffeescript-issue-425]: https://github.com/jashkenas/coffee-script/issues/425
