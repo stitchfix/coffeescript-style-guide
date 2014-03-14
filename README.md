@@ -298,30 +298,22 @@ print inspect value
 new Tag(new Value(a, b), new Arg(c))
 ```
 
-You will sometimes see parentheses used to group functions (instead of being used to group function parameters). Examples of using this style (hereafter referred to as the "function grouping style"):
+Do not use function grouping style:
 
 ```coffeescript
+# No
 ($ '#selektor').addClass 'klass'
 
+# No
 (foo 4).bar 8
-```
 
-This is in contrast to:
-
+# Yes
 ```coffeescript
 $('#selektor').addClass 'klass'
 
+# Yes
 foo(4).bar 8
 ```
-
-In cases where method calls are being chained, some adopters of this style prefer to use function grouping for the initial call only:
-
-```coffeescript
-($ '#selektor').addClass('klass').hide() # Initial call only
-(($ '#selektor').addClass 'klass').hide() # All calls
-```
-
-The function grouping style is not recommended. However, **if the function grouping style is adopted for a particular project, be consistent with its usage.**
 
 <a name="strings"/>
 ## Strings
