@@ -236,7 +236,18 @@ For constants, use all uppercase with underscores:
 CONSTANT_LIKE_THIS
 ```
 
-Methods and variables that are intended to be "private" should begin with a leading underscore:
+For variables reference JQuery elements, precede the name with `$`
+
+```coffeescript
+# Yes
+$form = $("form[data-submit-form]")
+  
+# No
+form = $("form[data-submit-form]")
+
+```
+
+Methods and variables exposed in an object that are intended to be "private" should begin with a leading underscore:
 
 ```coffeescript
 _privateMethod: ->
