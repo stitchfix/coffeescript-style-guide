@@ -332,6 +332,16 @@ Prefer single quoted strings (`''`) instead of double quoted (`""`) strings, unl
 
 Favor `unless` over `if` for negative conditions.
 
+```coffeescript
+# Yes
+unless foo
+  doSomething()
+
+# No
+if not foo
+  doSomething()
+```
+
 Instead of using `unless...else`, use `if...else`:
 
 ```coffeescript
@@ -348,7 +358,7 @@ Instead of using `unless...else`, use `if...else`:
     ...
 ```
 
-Multi-line if/else clauses should use indentation:
+Do not use `then`:
 
 ```coffeescript
   # Yes
